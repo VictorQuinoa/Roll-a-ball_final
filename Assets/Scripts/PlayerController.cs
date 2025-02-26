@@ -1,125 +1,141 @@
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
- 
- private Rigidbody rb; 
- private int count;
+    private Rigidbody rb;
+    private int count;
+    private float movementX;
+    private float movementY;
+    private Animator anim;
+    private Renderer playerRenderer;
+    private bool isInvulnerable = false;
 
- private float movementX;
- private float movementY;
+    public float speed = 10f;
+    public float invulnerabilityDuration = 5f;
+    public TextMeshProUGUI countText;
+    public GameObject winTextObject;
 
- public float launchForce = 10f;
-
- public float speed = 0; 
- public TextMeshProUGUI countText;
-
- public GameObject winTextObject;
-
-
- void Start()
+    void Start()
     {
-
         rb = GetComponent<Rigidbody>();
         count = 0;
-        setCountText();
+        SetCountText();
         winTextObject.SetActive(false);
+
+        anim = GetComponent<Animator>();
+        playerRenderer = GetComponent<Renderer>();
     }
- 
 
- void OnMove(InputValue movementValue)
+    void OnMove(InputValue movementValue)
     {
-
         Vector2 movementVector = movementValue.Get<Vector2>();
-
-
-        movementX = - movementVector.x; 
-        movementY = - movementVector.y; 
+        movementX = -movementVector.x;
+        movementY = -movementVector.y;
     }
 
-
- void setCountText()
- {
-   countText.text = "Count:" + count.ToString();
-   
-   if(count >= 12)
-   {
-      winTextObject.SetActive(true);
-   }
-   
- }
-
-
- private void FixedUpdate() 
+    void SetCountText()
     {
+        countText.text = "Count: " + count.ToString();
+        if (count >= 14)
+        {
+            winTextObject.SetActive(true);
+        }
+    }
 
-        Vector3 movement = new Vector3 (movementX, 0.0f, movementY);
+    private void FixedUpdate()
+    {
+        Vector3 movement = new Vector3(movementX, 0.0f, movementY);
+        rb.AddForce(movement * speed);
 
-
-       // rb.AddForce(movement * speed); 
-       
-       Vector3 dir = Vector3.zero;
+        Vector3 dir = Vector3.zero;
         dir.x = -Input.acceleration.y;
         dir.z = Input.acceleration.x;
         if (dir.sqrMagnitude > 1)
             dir.Normalize();
-        
+
         dir *= Time.deltaTime;
         transform.Translate(dir * speed);
+
+        UpdateAnimationAndColor();
     }
 
-     void OnTriggerEnter(Collider other) 
-   {
-     // other.gameObject.SetActive(false);
-    
-
-     if(other.gameObject.CompareTag("PickUp_I")){
-        other.gameObject.SetActive(false);
-       count ++;
-        setCountText();
-     }
-
-     if(other.gameObject.CompareTag("PickUp")){
-        other.gameObject.SetActive(false);
-       count ++;
-        setCountText();
-     }
-
-     if (other.gameObject.CompareTag("Enemigo")){
-      rb.gameObject.SetActive(false);
-      Destroy(rb);
-      countText.text = "Has perdido";
-     }
-
-     if (other.gameObject.CompareTag("Agua")){
-      rb.gameObject.SetActive(false);
-      Destroy(rb);
-      countText.text = "Aprende a nadar";
-     }
-
-    
-}
-private void OnCollisionEnter(Collision collision)
+    void UpdateAnimationAndColor()
     {
-        if (collision.gameObject.CompareTag("Rampa")) // Verifica si colisiona con una rampa
+        if (isInvulnerable)
         {
-            Rigidbody rb = GetComponent<Rigidbody>();
-            if (rb != null)
-            {
-               Vector3 rampNormal = collision.contacts[0].normal;
-                // Obtener la normal de la superficie de contacto (dirección de la rampa)
-                 Vector3 launchDirection = Vector3.ProjectOnPlane(transform.forward, rampNormal).normalized;
-
-                // Aplicar fuerza en la dirección de la rampa
-                rb.AddForce(launchDirection.normalized * launchForce, ForceMode.Impulse);
-
-                Debug.Log("Pelota lanzada en dirección: " + launchDirection);
-            }
+            anim.SetBool("isInvulnerable", true);
+            anim.SetBool("isMoviendose", false);
+           
+            playerRenderer.material.color = Color.yellow;
+            return;
         }
+
+        else if (isMoviendose())
+        {
+            anim.SetBool("isMoviendose", true);
+            
+            anim.SetBool("isInvulnerable", false);
+            playerRenderer.material.color = Color.blue;
+        }
+        else
+        {
+            anim.SetBool("isMoviendose", false);
+        
+            anim.SetBool("isInvulnerable", false);
+            playerRenderer.material.color = Color.red;
+        }
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("PickUp"))
+        {
+            other.gameObject.SetActive(false);
+            count++;
+            SetCountText();
+        }
+
+        if (other.gameObject.CompareTag("PickUp_I"))
+        {
+            other.gameObject.SetActive(false);
+            count++;
+            SetCountText();
+            StartCoroutine(BecomeInvulnerable());
+        }
+
+        if (other.gameObject.CompareTag("Enemigo") && !isInvulnerable)
+        {
+            rb.gameObject.SetActive(false);
+            Destroy(rb);
+            countText.text = "Has perdido";
+        }
+
+        if (other.gameObject.CompareTag("Agua"))
+        {
+            rb.gameObject.SetActive(false);
+            Destroy(rb);
+            countText.text = "Aprende a nadar";
+        }
+    }
+
+    IEnumerator BecomeInvulnerable()
+    {
+        isInvulnerable = true;
+        UpdateAnimationAndColor();
+        Debug.Log("Jugador invulnerable");
+
+        yield return new WaitForSeconds(invulnerabilityDuration);
+
+        isInvulnerable = false;
+        UpdateAnimationAndColor();
+        Debug.Log("Jugador vuelve a ser vulnerable");
+    }
+
+    bool isMoviendose()
+    {
+        return rb.velocity.magnitude > 0.1f;
     }
 }
