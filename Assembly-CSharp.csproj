@@ -65,6 +65,7 @@
   <ItemGroup>
     <Compile Include="Assets/Scripts/CameraMovement.cs" />
     <Compile Include="Assets/Scripts/FirstPerson.cs" />
+    <Compile Include="Assets/Scripts/Ramp.cs" />
     <Compile Include="Assets/Scripts/Count.cs" />
     <Compile Include="Assets/Scripts/EnemyMovement.cs" />
     <Compile Include="Assets/Scripts/Rotator.cs" />
