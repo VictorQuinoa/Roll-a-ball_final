@@ -127,6 +127,59 @@ public class Ramp : MonoBehaviour
 </details>
 
 
+<details>
+  <Summary>
+Para la gestion de estados empleamos el animator de Unity. En el caso de esta aplicación he creado 3. Quieto, en movimiento, y Inulnerable.
+
+Los dos primeros simplemente detectan el movimiento del jugador y cambian el color dependiendo de este. El invulnerable es mas complejo, ya que no solo cambia el color temporalmente tras recoger un pickup especial, si no que aporta invulnerabilidad a los enemigos temporalmente.
+
+```
+void UpdateAnimationAndColor()
+    {
+        if (isInvulnerable)
+        {
+            anim.SetBool("isInvulnerable", true);
+            anim.SetBool("isMoviendose", false);
+           
+            playerRenderer.material.color = Color.yellow;
+            return;
+        }
+
+        else if (isMoviendose())
+        {
+            anim.SetBool("isMoviendose", true);
+            
+            anim.SetBool("isInvulnerable", false);
+            playerRenderer.material.color = Color.blue;
+        }
+        else
+        {
+            anim.SetBool("isMoviendose", false);
+        
+            anim.SetBool("isInvulnerable", false);
+            playerRenderer.material.color = Color.red;
+        }
+    }
+```
+```
+IEnumerator BecomeInvulnerable()
+    {
+        isInvulnerable = true;
+        UpdateAnimationAndColor();
+        Debug.Log("Jugador invulnerable");
+
+        yield return new WaitForSeconds(invulnerabilityDuration);
+
+        isInvulnerable = false;
+        UpdateAnimationAndColor();
+        Debug.Log("Jugador vuelve a ser vulnerable");
+    }
+
+```
+    
+  </Summary>
+</details>
+
 
 <details>
   <Summary>
