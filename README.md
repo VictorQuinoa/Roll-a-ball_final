@@ -125,3 +125,32 @@ public class Ramp : MonoBehaviour
 
   
 </details>
+
+
+
+<details>
+  <Summary>
+   Release y APK
+  </Summary>
+
+Para la release de la aplicación necesitamos una APK, para esto necesitamos descargar un plugin de Unity, el AndroidBuild Support, que nos permite exportar el proyeco a android.
+
+Una vez instalado y configuramos la aplicación para android, en este caso hacemos que el dispositivo muestre la aplicación horizontalmente para mejorar la visión.
+
+A continuación conectamos el mobil al ordenador y ejecutamos la aplicación, lo que hará que se cree una apk y si todo va bien, se ejecute la aplicación.
+
+Es importante decir que hay que permitir el control en mobil, para lo que usaremos el movimiento del dispositivo para dirigir la pelota mediante el siguiente código en el script del movimiento del jugador.
+
+```
+  Vector3 dir = Vector3.zero;
+        dir.x = -Input.acceleration.y;
+        dir.z = Input.acceleration.x;
+        if (dir.sqrMagnitude > 1)
+            dir.Normalize();
+```
+
+Una vez hecho esto ya podemos crear la release en github y subir la APK.
+
+
+  
+</details>
