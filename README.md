@@ -7,7 +7,7 @@ La aplicación consiste en la creación de un mapa en el cual el jugador control
 
 ## Desarrollo
 <details>
-  <summary>Cámara</summary>
+  <summary><h3>  Cámara  </h3></summary>
 
   Para el control de la cámara se crea un script que permite el cambio de perspectiva pulsando la tecla f.
   
@@ -17,7 +17,7 @@ La aplicación consiste en la creación de un mapa en el cual el jugador control
 
 <details>
   
-  <summary>Enemigos</summary>
+  <summary><h3>Enemigos</h3></summary>
 
   La creación de enemigos requiere de el uso de NavMesh. Este elemento mapea el mapa creado para que los enemigos creados detecten los lugares por los que moverse.
 
@@ -58,7 +58,7 @@ if (other.gameObject.CompareTag("Enemigo") && !isInvulnerable)
 
 <details>
   <summary>
-    Elementos interactivos
+    <h3>Elementos interactivos</h3>
   </summary>
 
   Dentro de los elementos interactivos encontramos una rampa que impulsa al jugador, y los pickups que debe recoger.
@@ -129,7 +129,7 @@ public class Ramp : MonoBehaviour
 
 <details>
   <Summary>
-    Estados
+   <h3> Estados </h3>
   </Summary>
 Para la gestion de estados empleamos el animator de Unity. En el caso de esta aplicación he creado 3. Quieto, en movimiento, y Inulnerable.
 
@@ -185,7 +185,7 @@ IEnumerator BecomeInvulnerable()
 
 <details>
   <Summary>
-   Release y APK
+   <h3>Release y APK</h3>
   </Summary>
 
 Para la release de la aplicación necesitamos una APK, para esto necesitamos descargar un plugin de Unity, el AndroidBuild Support, que nos permite exportar el proyeco a android.
