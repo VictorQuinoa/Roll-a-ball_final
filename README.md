@@ -55,3 +55,73 @@ if (other.gameObject.CompareTag("Enemigo") && !isInvulnerable)
   A mayores, he esablecido elementos del entorno ( agua y cactus) con el mismo efecto de eliminar al jugador, pero sin capacidad de movimiento.
   
 </details>
+
+<details>
+  <summary>
+    Elementos interactivos
+  </summary>
+
+  Dentro de los elementos interactivos encontramos una rampa que impulsa al jugador, y los pickups que debe recoger.
+
+  ## Pick Ups
+
+   Los pickups son los puntos que el jugador debe recoger para ganar la partida.
+   
+   Para su creación, se crea un cubo y se coloca en el mapa de la manera deseada.
+   
+   Para darles su función se les eiqueta como pickups, y como a los enemigos se les establece como trigger. La diferencia es que en este caso, al tocar el jugador los pickups, los que desaparecen son estosm y al jugador le aumenta la puntución y, en caso de recoger 
+   todos, se lanza un mensaje de victoria.
+
+   ```
+void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("PickUp"))
+        {
+            other.gameObject.SetActive(false);
+            count++;
+            SetCountText();
+        }
+
+ void SetCountText()
+    {
+        countText.text = "Count: " + count.ToString();
+        if (count >= 14)
+        {
+            winTextObject.SetActive(true);
+        }
+    }
+   ```
+
+## Rampa
+
+   La rampa simplemente cumple la función de impulsar al jugador cuando pase sobre ella, so mediante otro trigger y el uso de vectores y una fuerza que realiza el lanzamiento.
+
+   ```
+public class Ramp : MonoBehaviour
+{
+    [Tooltip("Dirección fija de lanzamiento (debe estar normalizada)")]
+    public Vector3 launchDirection = new Vector3(1, 0.5f, 0);
+
+    public float launchForce = 10f;
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Player")) // Asegurar que solo afecte a la pelota
+        {
+            Rigidbody rb = collision.gameObject.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                Vector3 finalLaunchDirection = launchDirection.normalized;
+                rb.velocity = Vector3.zero;
+                rb.AddForce(finalLaunchDirection * launchForce, ForceMode.Impulse);
+                Debug.Log("Pelota lanzada en dirección: " + finalLaunchDirection);
+            }
+        }
+    }
+}
+   ```
+
+  Este script es propio de la rampa y en este caso detecta la etiqueta del jugador.
+
+  
+</details>
